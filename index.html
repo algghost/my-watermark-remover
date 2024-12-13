@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إزالة العلامة المائية من الصور</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+        input[type="file"] {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>أداة إزالة العلامة المائية من الصور</h1>
+    <p>قم بتحميل صورة تحتوي على علامة مائية، ثم اضغط على زر حفظ لإزالة العلامة المائية.</p>
+    <input type="file" id="imageUpload" accept="image/*">
+    <br>
+    <canvas id="canvas"></canvas>
+    <br>
+    <button id="saveBtn">حفظ الصورة</button>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const saveBtn = document.getElementById('saveBtn');
+        let img = new Image();
+
+        // تحميل الصورة
+        imageUpload.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    img.onload = function () {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // دالة لحذف العلامة المائية (يجب أن تقوم بتحديد المنطقة يدويًا)
+        saveBtn.addEventListener('click', function () {
+            // تحديد منطقة العلامة المائية (نحن نفترض هنا مثلاً منطقة معينة)
+            const x = 50; // إحداثيات X للعلامة المائية
+            const y = 50; // إحداثيات Y للعلامة المائية
+            const width = 200; // عرض المنطقة
+            const height = 100; // ارتفاع المنطقة
+
+            // مسح المنطقة المحددة باستخدام لون مشابه للخلفية
+            ctx.clearRect(x, y, width, height);
+
+            // عرض الصورة المعدلة على الواجهة
+            const modifiedImage = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = modifiedImage;
+            link.download = 'image_without_watermark.png';
+            link.click();
+        });
+    </script>
+</body>
+</html>
